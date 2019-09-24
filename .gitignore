@@ -45,6 +45,7 @@
 # Kernel Module Compile Results
 *.mod*
 *.cmd
+!CLIENT_DATA/files/runra.cmd
 .tmp_versions/
 modules.order
 Module.symvers

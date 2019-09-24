@@ -57,7 +57,7 @@ Set $SetupType$       = "nsis"
 Set $ProductId$       = "ica-remote-support"
 Set $Setupfile$       = "runra.cmd"
 ; the path where we find the product after the installation
-Set $InstallDir$      = "\Program Files\Remote Support"
+Set $InstallDir$      = "c:\Program Files\Remote Support"
 Set $LicenseRequired$ = "false"
 Set $LicensePool$     = "p_" + $ProductId$
 Set $MsiId$           = ""
@@ -79,76 +79,53 @@ else
    endif
    
    Message "Installing " + $ProductId$ + " ..."
-   
-   if $LicenseRequired$ = "true"
-      comment "Licensing required, reserve license and get license key"
-      Sub_get_licensekey
-   endif
 
-   if ($SetupType$ = "nsis")
-      Set $NsisInstallBatch$ = "%ScriptPath%\runra.cmd /S"
-      if not ($InstallDir$ = '')
-         Set $NsisInstallBatch$ = $NsisInstallBatch$ + ' /D="' + $InstallDir$ + '"'
-      endif
-   endif
+   comment "Start Remote Assitance Setup"
    
-   comment "Start setup program"
    ChangeDirectory "%SCRIPTPATH%"
    ;----------------------------------------------
-   Winbatch_install_nsis
+   ; get the install folder ready   
+   comment "Create the install folder"
+   DosInAnIcon_mkdir
    ;----------------------------------------------
-   Sub_check_exitcode	
-endif
+   ; copy files to windows disk
+   comment "Copy files"
+   Files_install /32Bit
 
+   LinkFolder_install
+
+endif
 
 ; ----------------------------------------------------------------
 ; install section
 ; ----------------------------------------------------------------
 
-[Winbatch_install_nsis]
-;NSIS Nullsoft Scriptable Install System 
-$NsisInstallBatch$
+[DosInAnIcon_mkdir]
+mkdir "$InstallDir$"
+
+[Files_install]
+; copy all files into the installation directory:
+;
+copy -s "%ScriptPath%\files\*.*" $InstallDir$
+ 
+[LinkFolder_install]
+;
+; Create a shortcut to the installed cmd file on AllUsers desktop:
+;
+ set_basefolder common_desktopdirectory
+ set_subfolder ""
+;
+ set_link
+ 	name: Request Remote Help
+ 	target: $InstallDir$\runra.cmd
+; 	parameters: <some_param>
+ 	working_dir: $InstallDir$
+	icon_file: $InstallDir$\Remote_Support.ico
+; 	icon_index: 2
+ end_link
+
 
 ; ----------------------------------------------------------------
-
-
-[Sub_get_licensekey]
-if opsiLicenseManagementEnabled
-   comment "License management is enabled and will be used"
-
-   comment "Trying to get a license key"
-   Set $LicenseKey$ = demandLicenseKey ($LicensePool$)
-   ; If there is an assignment of exactly one licensepool to the product the following call is possible:
-   ; Set $LicenseKey$ = demandLicenseKey ("", $ProductId$)
-   ;
-   ; If there is an assignment of a license pool to a windows software id, it is possible to use:
-   ; DefVar $WindowsSoftwareId$
-   ; $WindowsSoftwareId$ = "..."
-   ; Set $LicenseKey$ = demandLicenseKey ("", "", $WindowsSoftwareId$)
-
-   DefVar $ServiceErrorClass$
-   set $ServiceErrorClass$ = getLastServiceErrorClass
-   comment "Error class: " + $ServiceErrorClass$
-   
-   if $ServiceErrorClass$ = "None"
-      comment "Everything fine, we got the license key '" + $LicenseKey$ + "'"
-   else
-      if $ServiceErrorClass$ = "LicenseConfigurationError"
-         LogError "Fatal: license configuration must be corrected"
-         LogError getLastServiceErrorMessage
-         isFatalError
-      else 
-         if $ServiceErrorClass$ = "LicenseMissingError"
-            LogError "Fatal: required license is not supplied"
-            isFatalError
-         endif
-      endif
-   endif
-else
-   LogError "Fatal: license required, but license management not enabled"
-   isFatalError
-endif
-
 ; ----------------------------------------------------------------
 ; ----------------------------------------------------------------
 

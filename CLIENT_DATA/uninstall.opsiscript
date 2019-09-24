@@ -19,14 +19,13 @@ DefVar $LicensePool$
 Set $LogDir$ = "%opsiLogDir%"
 
 ; ----------------------------------------------------------------; ----------------------------------------------------------------
-Set $SetupType$ = "nsis"
 ; ----------------------------------------------------------------; ----------------------------------------------------------------
 
 ; ----------------------------------------------------------------; ----------------------------------------------------------------
 ; - Please check the following values                             -
 ; ----------------------------------------------------------------
 Set $ProductId$       = "ica-remote-support"
-Set $InstallDir$      = "\Program Files\Remote Support"
+Set $InstallDir$      = "c:\Program Files\Remote Support"
 Set $LicenseRequired$ = "false"
 Set $LicensePool$     = "p_" + $ProductId$
 ; ----------------------------------------------------------------
@@ -41,23 +40,4 @@ if FileExists("%ScriptPath%\delsub.opsiscript")
    comment "Start uninstall sub section"
    Sub "%ScriptPath%\delsub.opsiscript"
 endif
-
-if $LicenseRequired$ = "true"
-   comment "Licensing required, free license used"
-   Sub_free_license
-endif
-
-[Sub_free_license]
-comment "License management is enabled and will be used"
-
-comment "Trying to free license used for the product"
-DefVar $result$
-Set $result$ = FreeLicense($LicensePool$)
-; If there is an assignment of a license pool to the product, it is possible to use
-; Set $result$ = FreeLicense("", $ProductId$)
-;
-; If there is an assignment of a license pool to a windows software id, it is possible to use
-; DefVar $WindowsSoftwareId$
-; $WindowsSoftwareId$ = "..."
-; set $result$ = FreeLicense("", "", $WindowsSoftwareId$)
 
