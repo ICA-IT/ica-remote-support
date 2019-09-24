@@ -8,7 +8,7 @@ id: ica-remote-support
 name: ICA-remote-support
 description: Set up remote support for an ICA computer
 advice: 
-version: 1
+version: 2
 priority: 0
 licenseRequired: False
 productClasses: 
