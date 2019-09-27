@@ -18,11 +18,28 @@ echo **                                                                         
 echo ****************************************************************************************
 echo.
 ) else (
+if exist \\dc1\netlogon (
+if exist \\dc1\netlogon\dadsoffer.msrcIncident del \\dc1\netlogon\dadsoffer.msrcIncident
+cmd /c start msra /saveasfile \\dc1\netlogon\dadsoffer.msrcIncident password
+echo.
+echo ****************************************************************************************
+echo **                                                                                    **
+echo **   A window titled "Windows Remote Assistance" will appear on your screen shortly.  **
+echo **   If you are not in verbal contact with the person providing help, do so now.      **
+echo **                                                                                    **
+echo **   If you are planning to receive help from John, you can get his phone number      **
+echo **   from Brenda or Matt.                                                             **
+echo **                                                                                    **
+echo **   Please do not press any keys or click on any buttons until directed to.          **
+echo **                                                                                    **
+echo ****************************************************************************************
+echo.
+) else (
 echo.
 echo ****************************************************************************************
 echo **                                                                                    **
 echo **   ERROR ::                                                                         **
-echo **   Unable to find and access the ICA teachers' dropbox share                        **
+echo **   Unable to find and access the ICA teachers' dropbox or netlogon share            **
 echo **                                                                                    **
 echo **   Only teachers can access remote assistance. If you are a teacher, then this      **
 echo **   is a programming error.                                                          **
@@ -31,6 +48,7 @@ echo **   Please report programming errors to John, Brenda, or Matt.            
 echo **                                                                                    **
 echo ****************************************************************************************
 echo.
+)
 )
 pause
 @echo on
